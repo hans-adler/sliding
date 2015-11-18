@@ -8,6 +8,7 @@ const
   cols = 4
 
 # The encoding of tiles and locations depends on rows and cols being at most 3 bits.
+# The solvability criterion depends on them being at least 2.
 assert(rows in 2..7)
 assert(cols in 2..7)
 
@@ -30,7 +31,7 @@ var
 
 init_random(config)
 init_md(config)
-init_ic(config)
+init_id(config)
 echo config
 
 const found = -1
@@ -38,7 +39,7 @@ const found = -1
 proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int
 
 proc ida_star(): int =
-  var upper_bound = bound_md(config)
+  var upper_bound = config.bound
   while true:
     echo upper_bound
     let r = ida_star_search(0, upper_bound)
@@ -57,7 +58,7 @@ proc ida_star(): int =
 proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int =
   #echo($g & "\t" & $upper_bound)
   #echo config
-  let f = g + bound_md(config)
+  let f = g + config.bound
   if f > upper_bound:
     return f
   elif is_solved(config):

@@ -23,22 +23,23 @@ template glorified_number(typ: typedesc): stmt =
   proc `dec`* (x: var typ, y = 1) {.magic: "Dec", noSideEffect.}
   proc `+`    (x: typ): int {.noSideEffect.} = return int(x)
   proc `+`    (x: typ, y: int): typ {.borrow.}
+  proc `-`    (x: typ, y: int): typ {.borrow.}
 
 glorified_number(Row)
 glorified_number(Col)
 glorified_number(Index)
 glorified_number(Coindex)
 
-proc toIndex(row: Row, col: Col): Index {.noSideEffect.} =
+proc to_Index(row: Row, col: Col): Index {.noSideEffect.} =
   return Index(+row * cols + +col)
 
-proc toRow(index: Index): Row {.noSideEffect.} =
+proc to_Row(index: Index): Row {.noSideEffect.} =
   return Row(+index div cols)
 
-proc toCol(index: Index): Col {.noSideEffect.} =
+proc to_Col(index: Index): Col {.noSideEffect.} =
   return Col(+index mod cols)
 
-proc toCoindex(row: Row, col: Col): Coindex {.noSideEffect.} = 
+proc to_Coindex(row: Row, col: Col): Coindex {.noSideEffect.} = 
   return Coindex(+col * rows + +row)
 
 iterator all_rows(): Row {.noSideEffect.} =
@@ -52,12 +53,12 @@ iterator all_cols(): Col {.noSideEffect.} =
 # Goes from start to goal, first vertically, then horizontally.
 # Excludes start, but includes goal if it is not equal to start.
 iterator canonical_path(start, goal: Index): Index {.noSideEffect.} =
-  let goal_row = toRow(goal)
+  let goal_row = to_Row(goal)
   var result = start
-  while toRow(result) < goal_row:
+  while to_Row(result) < goal_row:
     result.inc cols
     yield result
-  while toRow(result) > goal_row:
+  while to_Row(result) > goal_row:
     result.dec cols
     yield result
   if result == goal:
@@ -77,7 +78,7 @@ proc `$`(col: Col): string {.noSideEffect.} =
   return $(int(col))
 
 proc `$`(index: Index): string {.noSideEffect.} =
-  return "(" & $(toRow(index)) & "," & $(toCol(index)) & ")"
+  return "(" & $(to_Row(index)) & "," & $(to_Col(index)) & ")"
 
 proc `*`(s: string, count: int): string {.noSideEffect.} =
   result = ""

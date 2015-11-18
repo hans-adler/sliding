@@ -18,42 +18,78 @@ template glorified_unsigned(typ: typedesc): stmt =
 glorified_unsigned(Loc)
 glorified_unsigned(Tile)
 
-proc toLoc(row: Row, col: Col): Loc {.noSideEffect.} =
+# Conversion between types
+
+proc to_Loc(row: Row, col: Col): Loc {.noSideEffect.} =
   var outcome = uint32(row) shl row_shift
   outcome = outcome or (uint32(col) shl col_shift)
-  outcome = outcome or (uint32(toIndex(row, col)) shl index_shift)
-  outcome = outcome or (uint32(toCoindex(row, col)) shl coindex_shift)
+  outcome = outcome or (uint32(to_Index(row, col)) shl index_shift)
+  outcome = outcome or (uint32(to_Coindex(row, col)) shl coindex_shift)
   return Loc(outcome)
 
-proc toTile(row: Row, col: Col): Tile {.noSideEffect.} =
-  return Tile(toLoc(row, col))
+proc to_Tile(row: Row, col: Col): Tile {.noSideEffect.} =
+  return Tile(to_Loc(row, col))
 
-proc toRow(loc: Loc): Row {.noSideEffect.} =
+proc to_Row(loc: Loc): Row {.noSideEffect.} =
   return Row((+loc and row_mask) shr row_shift)
 
-proc toCol(loc: Loc): Col {.noSideEffect.} =
+proc to_Col(loc: Loc): Col {.noSideEffect.} =
   return Col((+loc and col_mask) shr col_shift)
 
-proc homeRow(tile: Tile): Row {.noSideEffect.} =
-  return toRow(Loc(tile))
+proc home_Row(tile: Tile): Row {.noSideEffect.} =
+  return to_Row(Loc(tile))
 
-proc homeCol(tile: Tile): Col {.noSideEffect.} =
-  return toCol(Loc(tile))
+proc home_Col(tile: Tile): Col {.noSideEffect.} =
 
-proc toIndex(loc: Loc): Index {.noSideEffect.} =
+  return to_Col(Loc(tile))
+
+proc to_Index(loc: Loc): Index {.noSideEffect.} =
   return Index((+loc and index_mask) shr index_shift)
 
-proc toCoindex(loc: Loc): Coindex {.noSideEffect.} =
+proc to_Coindex(loc: Loc): Coindex {.noSideEffect.} =
   return Coindex((+loc and coindex_mask) shr coindex_shift)
 
-proc homeIndex(tile: Tile): Index {.noSideEffect.} =
-  return toIndex(Loc(tile))
+proc home_Index(tile: Tile): Index {.noSideEffect.} =
+  return to_Index(Loc(tile))
 
-proc is_blank(tile: Tile): bool {.noSideEffect.} =
-  return +homeIndex(tile) == 0
+
+# Order
+
+proc `<` (loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Index(loc1) <  to_Index(loc2)
+proc `<=`(loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Index(loc1) <= to_Index(loc2)
+
+proc `<` (tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Index(tile1) <  home_Index(tile2)
+proc `<=`(tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Index(tile1) <= home_Index(tile2)
+
+
+# iterators
+
+iterator all_strictly_between(one_end, other_end: Index): Index =
+  var first, last: Index
+  if one_end < other_end:
+    first = one_end + 1
+    last  = other_end - 1
+  else:
+    first = other_end + 1
+    last  = one_end - 1
+  for i in int(first)..int(last):
+    yield Index(i)
+
+
+# Recognising empty 'tile'
+
+proc is_empty_tile(tile: Tile): bool {.noSideEffect.} =
+  return +home_index(tile) == 0
+
+
+# Conversion to string
 
 proc `$`(loc: Loc): string {.noSideEffect.} =
-  var index = int(toIndex(loc))
+  var index = int(to_Index(loc))
   if index == 0:
     return "  "
   else:
@@ -62,11 +98,13 @@ proc `$`(loc: Loc): string {.noSideEffect.} =
 proc `$`(tile: Tile): string {.noSideEffect.} =
   return $(Loc(tile))
 
+# Sorted array of Locs for quick optimisations
+
 var
   loc_list: array[0 .. +last_index, Loc]
 proc init() =
   for row in all_rows():
     for col in all_cols():
-      var loc = toLoc(row, col)
-      loc_list[int(toIndex(loc))] = loc
+      var loc = to_Loc(row, col)
+      loc_list[int(to_Index(loc))] = loc
 init()

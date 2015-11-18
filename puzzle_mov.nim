@@ -22,10 +22,14 @@ proc h_move(config: var Config, h_sense: Sense) =
     index1 = index2 + h_sense
     tile = config.tiles[+index1]
     home_col = homeCol(tile)
+  # update md
   config.h_bounds.md.inc(abs(+col2 - +home_col) - abs(+col1 - +home_col))
+
+  # update configuration
   swap(config.tiles[+index1], config.tiles[+index2])
   config.blank_col   = col1
   config.blank_index = index1
+
 proc v_move(config: var Config, v_sense: Sense) =
   let
     row2 = config.blank_row
@@ -35,7 +39,17 @@ proc v_move(config: var Config, v_sense: Sense) =
     index1 = index2 + v_sense * cols
     tile = config.tiles[+index1]
     home_row = homeRow(tile)
+  # update md
   config.v_bounds.md.inc(abs(+row2 - +home_row) - abs(+row1 - +home_row))
+  # update ic
+  for i in all_strictly_between(index1, index2):
+    if tile > config.tiles[+i]:
+      config.v_bounds.ic.inc(v_sense)
+    else:
+      config.v_bounds.ic.dec(v_sense)
+    config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
+  
+  # update configuration
   swap(config.tiles[+index1], config.tiles[+index2])
   config.blank_row   = row1
   config.blank_index = index1
