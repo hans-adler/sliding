@@ -17,6 +17,12 @@ assert(cols in 2..7)
 
 import strutils
 import math
+import terminal
+import parseutils
+import times
+erase_screen()
+set_cursor_pos(0, 0)
+
 math.randomize()
 
 include puzzle_rci
@@ -26,28 +32,24 @@ include puzzle_mov
 
 ##############################################################################
 
+const found = -1
 var
   config: Config
-
-init_random(config)
-init_md(config)
-init_id(config)
-echo config
-
-const found = -1
+  nodes = 0
 
 proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int
 
 proc ida_star(): int =
   var upper_bound = config.bound
   while true:
-    echo upper_bound
+    echo " " & $upper_bound
     let r = ida_star_search(0, upper_bound)
     if r == found:
       return upper_bound
     elif r == high(int):
       return high(int)
     upper_bound = r
+
 
 # g: cost of reaching current configuration from start configuration
 # upper_bound: current upper bound for solutions
@@ -58,11 +60,13 @@ proc ida_star(): int =
 proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int =
   #echo($g & "\t" & $upper_bound)
   #echo config
+  nodes.inc
   let f = g + config.bound
   if f > upper_bound:
     return f
   elif is_solved(config):
-    echo g
+    echo "Found it after $# steps. Minimum solution is of length $#." % [$nodes, $g]
+    #echo config
     return found
   var min = high(int)
   if not (left in forbidden) and config.blank_col > Col(0):
@@ -99,5 +103,21 @@ proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int =
       min = t
   return min
 
-echo ida_star()
+var line_index = 0
 
+for line in "test.txt".lines:
+  echo "Line " & $line_index & ": " & line
+  if line_index == 0:
+    read(config, line)
+    #init_random(config)
+    init_md(config)
+    init_id(config)
+    echo config
+    let start_time = get_time()
+    discard ida_star()
+    let finish_time = get_time()
+    echo "Spent $# s." % [$(finish_time - start_time)]
+    break
+  line_index.inc
+
+#echo config

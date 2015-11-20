@@ -20,7 +20,7 @@ proc `$`(bounds: Bounds): string {.noSideEffect.} =
 proc bound(config: Config): int
 
 proc `$`(config: Config): string {.noSideEffect.} =
-  result = "┌" & ("──┬" * (cols - 1)) & "──┐ " & config.name & "\n"
+  result = "┌" & ("──┬" * (cols - 1)) & "──┐ '" & config.name & "'\n"
   var index = Index(0)
   for row in all_rows():
     result.add("│")
@@ -38,7 +38,7 @@ proc `$`(config: Config): string {.noSideEffect.} =
         result.add($config.v_bounds)
       result.add("\n")
     else:
-      result = result & "\n└" & ("──┴" * (cols - 1)) & "──┘" & $config.bound & "\n"
+      result = result & "\n└" & ("──┴" * (cols - 1)) & "──┘ " & $(bound(config)) & "\n"
 
 proc init_md(config: var Config) {.noSideEffect.} =
   config.h_bounds.md = 0
@@ -54,8 +54,12 @@ proc init_id(config: var Config) {.noSideEffect.} =
   config.h_bounds.ic = 0
   config.v_bounds.ic = 0
   for i in 0 .. +last_index:
+    if i == +config.blank_index:
+      continue
     for j in i+1 .. +last_index:
-      if config.tiles[i] > config.tiles[j]:
+      if j == +config.blank_index:
+        continue
+      if home_index(config.tiles[i]) > home_index(config.tiles[j]):
         config.v_bounds.ic.inc
   config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
 
@@ -95,13 +99,13 @@ proc init_random(config: var Config, blank_in_home_position = false) =
     config.blank_col   = toCol(new_blank_index)
     config.blank_index = new_blank_index
 
-proc is_solved(config: Config): bool =
+proc is_solved(config: var Config): bool =
   return config.h_bounds.md == 0 and config.v_bounds.md == 0
 
 proc bound_md(config: Config): int =
   return config.h_bounds.md + config.v_bounds.md
 
-proc bound(config: Config): int =
+proc bound_md_id(config: Config): int =
   var h_max = config.h_bounds.md
   var v_max = config.v_bounds.md
   if (config.h_bounds.id > h_max):
@@ -110,3 +114,22 @@ proc bound(config: Config): int =
     v_max = config.v_bounds.id
   result = h_max + v_max
   result = result + ((result - config.h_bounds.md - config.v_bounds.md) and 1)
+
+proc bound(config: Config): int =
+  return bound_md_id(config)
+
+proc read(config: var Config, line: string) =
+  var
+    i = 0
+    t: int
+  for index in all_indices():
+    i = i + 1 + line.parse_int(t, i)
+    config.tiles[+index] = Tile(loc_list[t])
+    if t == 0:
+      config.blank_row   = to_row(index)
+      config.blank_col   = to_col(index)
+      config.blank_index = index
+  i = i + 1 + line.parse_int(t, i)
+  i = i + 1 + line.parse_int(t, i)
+  i = i + 1 + line.parse_int(t, i)
+  config.name = line[i .. line.high]

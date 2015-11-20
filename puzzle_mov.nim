@@ -5,7 +5,7 @@ type
     left  = -1
     right = 1
     down  = cols
-  
+
 proc can_h_move(config: var Config, h_sense: Sense): bool {.noSideEffect.} =
   return (+config.blank_col + h_sense) in 0 .. +last_col
 proc can_v_move(config: var Config, v_sense: Sense): bool {.noSideEffect.} =
@@ -41,14 +41,14 @@ proc v_move(config: var Config, v_sense: Sense) =
     home_row = homeRow(tile)
   # update md
   config.v_bounds.md.inc(abs(+row2 - +home_row) - abs(+row1 - +home_row))
-  # update ic
+  # update id
   for i in all_strictly_between(index1, index2):
     if tile > config.tiles[+i]:
       config.v_bounds.ic.inc(v_sense)
     else:
       config.v_bounds.ic.dec(v_sense)
     config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
-  
+
   # update configuration
   swap(config.tiles[+index1], config.tiles[+index2])
   config.blank_row   = row1

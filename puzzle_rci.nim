@@ -3,7 +3,7 @@ import strutils
 # computed from configured parameters
 const
   indices = rows * cols
-  
+
 type
   Row*     = distinct range[0..rows - 1]
   Col*     = distinct range[0..cols - 1]
@@ -39,16 +39,20 @@ proc to_Row(index: Index): Row {.noSideEffect.} =
 proc to_Col(index: Index): Col {.noSideEffect.} =
   return Col(+index mod cols)
 
-proc to_Coindex(row: Row, col: Col): Coindex {.noSideEffect.} = 
+proc to_Coindex(row: Row, col: Col): Coindex {.noSideEffect.} =
   return Coindex(+col * rows + +row)
 
 iterator all_rows(): Row {.noSideEffect.} =
   for row in 0 .. +last_row:
-    yield Row(row)    
+    yield Row(row)
 
 iterator all_cols(): Col {.noSideEffect.} =
   for col in 0 .. +last_col:
     yield Col(col)
+
+iterator all_indices(): Index {.noSideEffect.} =
+  for index in 0 .. +lastIndex:
+    yield Index(index)
 
 # Goes from start to goal, first vertically, then horizontally.
 # Excludes start, but includes goal if it is not equal to start.
