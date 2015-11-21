@@ -7,5 +7,6 @@ debug: puzzle.nim puzzle_rci.nim puzzle_loc.nim puzzle_cfg.nim puzzle_mov.nim
 clean:
 	rm -rf nimcache
 	rm -f puzzle
+	rm -f *.nim~
 puzzle: puzzle.nim puzzle_rci.nim puzzle_loc.nim puzzle_cfg.nim puzzle_mov.nim
 	nim c puzzle

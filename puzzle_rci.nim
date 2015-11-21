@@ -1,3 +1,5 @@
+{.hint[XDeclaredButNotUsed]: off.}
+
 import strutils
 
 # computed from configured parameters
@@ -86,7 +88,3 @@ proc `$`(col: Col): string {.noSideEffect.} =
 proc `$`(index: Index): string {.noSideEffect.} =
   return "(" & $(to_Row(index)) & "," & $(to_Col(index)) & ")"
 
-proc `*`(s: string, count: int): string {.noSideEffect.} =
-  result = ""
-  for i in 1..count:
-    result.add(s)

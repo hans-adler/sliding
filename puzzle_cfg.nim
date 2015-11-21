@@ -1,3 +1,5 @@
+{.hint[XDeclaredButNotUsed]: off.}
+
 type
   Bounds*  = tuple
     md:        int  # Manhattan distance
@@ -14,14 +16,19 @@ type
 
 # Conversion to string
 
-proc `$`(bounds: Bounds): string {.noSideEffect.} =
+proc `*`*(s: string, count: int): string {.noSideEffect.} =
+  result = ""
+  for i in 1..count:
+    result.add(s)
+
+proc `$`*(bounds: Bounds): string {.noSideEffect.} =
   result = "md:" & strutils.align($bounds.md, 3) &
            "; id:" & strutils.align($bounds.id, 3) &
            " (" & strutils.align($bounds.ic, 3) & ")"
 
-proc bound(config: Config): int
+proc bound*(config: Config): int
 
-proc `$`(config: Config): string {.noSideEffect.} =
+proc `$`*(config: Config): string =
   result = "┌" & ("──┬" * (cols - 1)) & "──┐ '" & config.name & "'\n"
   var index = Index(0)
   for row in all_rows():
@@ -44,7 +51,7 @@ proc `$`(config: Config): string {.noSideEffect.} =
 
 # Initialisation
 
-proc init_md(config: var Config) {.noSideEffect.} =
+proc init_md*(config: var Config) {.noSideEffect.} =
   config.h_bounds.md = 0
   config.v_bounds.md = 0
   for index in 0 .. +last_index:
@@ -54,7 +61,7 @@ proc init_md(config: var Config) {.noSideEffect.} =
     config.h_bounds.md.inc abs(+homeCol(tile) - +toCol(Index(index)))
     config.v_bounds.md.inc abs(+homeRow(tile) - +toRow(Index(index)))
 
-proc init_id(config: var Config) =
+proc init_id*(config: var Config) =
   config.h_bounds.ic = 0
   config.v_bounds.ic = 0
   for i in 0 .. +last_index:
@@ -73,7 +80,7 @@ proc init_id(config: var Config) =
   config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
   config.h_bounds.id = (config.h_bounds.ic + cols - 2) div (cols - 1)
 
-proc init_sorted(config: var Config) =
+proc init_sorted*(config: var Config) =
   config.blank_row   = Row(0)
   config.blank_col   = Col(0)
   config.blank_index = Index(0)
@@ -84,7 +91,7 @@ proc init_sorted(config: var Config) =
 proc random_inclusive(a, b: int): int =
   return a + math.random(b+1-a)
 
-proc init_random(config: var Config, blank_in_home_position = false) =
+proc init_random*(config: var Config, blank_in_home_position = false) =
   init_sorted(config)
   config.name = "random"
   for i in countdown(+last_index, 1):
@@ -128,9 +135,6 @@ proc bound_md_id(config: Config): int =
   v_max = v_max + ((v_max - config.v_bounds.md) and 1)
   return h_max + v_max
 
-proc bound(config: Config): int =
-  return bound_md_id(config)
-
 # Input/output
 
 proc my_parse_int(s:string, number: var int, start: int): int =
@@ -138,14 +142,13 @@ proc my_parse_int(s:string, number: var int, start: int): int =
   while s[i] == ' ':
     i.inc
   i = i + 1 + s.parse_int(number, i)
-  #echo "'$#'[$#]='$#'" % [s, $i, $s[i]]
   while s[i-1] == ',':
     var number2: int
     i = i + 1 + s.parse_int(number2, i)
     number = number*1000 + number2
   return i - 1 - start
 
-proc read(config: var Config, line: string) =
+proc read*(config: var Config, line: string) =
   var
     i = 0
     t: int

@@ -1,3 +1,5 @@
+{.hint[XDeclaredButNotUsed]: off.}
+
 # More conversions
 
 proc to_Coindex(index: Index): Coindex =

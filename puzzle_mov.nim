@@ -3,6 +3,7 @@ type
   Dir = enum
     up    = -cols
     left  = -1
+    none  = 0
     right = 1
     down  = cols
 
@@ -30,7 +31,7 @@ proc h_move(config: var Config, h_sense: Sense) =
       config.h_bounds.ic.inc(h_sense)
     else:
       config.h_bounds.ic.dec(h_sense)
-    config.h_bounds.id = (config.h_bounds.ic + cols - 2) div (rows - 1)
+    config.h_bounds.id = (config.h_bounds.ic + cols - 2) div (cols - 1)
 
   # update configuration
   swap(config.tiles[+index1], config.tiles[+index2])

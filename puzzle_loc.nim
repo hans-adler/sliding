@@ -1,3 +1,5 @@
+{.hint[XDeclaredButNotUsed]: off.}
+
 type
   Loc*          = distinct uint32
   Tile*         = distinct Loc
