@@ -12,6 +12,8 @@ type
     v_bounds:  Bounds
     name:      string
 
+# Conversion to string
+
 proc `$`(bounds: Bounds): string {.noSideEffect.} =
   result = "md:" & strutils.align($bounds.md, 3) &
            "; id:" & strutils.align($bounds.id, 3) &
@@ -40,6 +42,8 @@ proc `$`(config: Config): string {.noSideEffect.} =
     else:
       result = result & "\n└" & ("──┴" * (cols - 1)) & "──┘ " & $(bound(config)) & "\n"
 
+# Initialisation
+
 proc init_md(config: var Config) {.noSideEffect.} =
   config.h_bounds.md = 0
   config.v_bounds.md = 0
@@ -50,7 +54,7 @@ proc init_md(config: var Config) {.noSideEffect.} =
     config.h_bounds.md.inc abs(+homeCol(tile) - +toCol(Index(index)))
     config.v_bounds.md.inc abs(+homeRow(tile) - +toRow(Index(index)))
 
-proc init_id(config: var Config) {.noSideEffect.} =
+proc init_id(config: var Config) =
   config.h_bounds.ic = 0
   config.v_bounds.ic = 0
   for i in 0 .. +last_index:
@@ -59,9 +63,15 @@ proc init_id(config: var Config) {.noSideEffect.} =
     for j in i+1 .. +last_index:
       if j == +config.blank_index:
         continue
-      if home_index(config.tiles[i]) > home_index(config.tiles[j]):
+      if config.tiles[i] > config.tiles[j]:
         config.v_bounds.ic.inc
+      if Index(j) >. Index(i) and config.tiles[i] >. config.tiles[j]:
+        config.h_bounds.ic.inc
+      if Index(j) <. Index(i) and config.tiles[i] <. config.tiles[j]:
+        config.h_bounds.ic.inc
+
   config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
+  config.h_bounds.id = (config.h_bounds.ic + cols - 2) div (cols - 1)
 
 proc init_sorted(config: var Config) =
   config.blank_row   = Row(0)
@@ -99,6 +109,8 @@ proc init_random(config: var Config, blank_in_home_position = false) =
     config.blank_col   = toCol(new_blank_index)
     config.blank_index = new_blank_index
 
+# Checking and computing bounds
+
 proc is_solved(config: var Config): bool =
   return config.h_bounds.md == 0 and config.v_bounds.md == 0
 
@@ -112,24 +124,39 @@ proc bound_md_id(config: Config): int =
     h_max = config.h_bounds.id
   if (config.v_bounds.id > v_max):
     v_max = config.v_bounds.id
-  result = h_max + v_max
-  result = result + ((result - config.h_bounds.md - config.v_bounds.md) and 1)
+  h_max = h_max + ((h_max - config.h_bounds.md) and 1)
+  v_max = v_max + ((v_max - config.v_bounds.md) and 1)
+  return h_max + v_max
 
 proc bound(config: Config): int =
   return bound_md_id(config)
+
+# Input/output
+
+proc my_parse_int(s:string, number: var int, start: int): int =
+  var i = start
+  while s[i] == ' ':
+    i.inc
+  i = i + 1 + s.parse_int(number, i)
+  #echo "'$#'[$#]='$#'" % [s, $i, $s[i]]
+  while s[i-1] == ',':
+    var number2: int
+    i = i + 1 + s.parse_int(number2, i)
+    number = number*1000 + number2
+  return i - 1 - start
 
 proc read(config: var Config, line: string) =
   var
     i = 0
     t: int
   for index in all_indices():
-    i = i + 1 + line.parse_int(t, i)
+    i = i + 1 + line.my_parse_int(t, i)
     config.tiles[+index] = Tile(loc_list[t])
     if t == 0:
       config.blank_row   = to_row(index)
       config.blank_col   = to_col(index)
       config.blank_index = index
-  i = i + 1 + line.parse_int(t, i)
-  i = i + 1 + line.parse_int(t, i)
-  i = i + 1 + line.parse_int(t, i)
+  i = i + 1 + line.my_parse_int(t, i)
+  i = i + 1 + line.my_parse_int(t, i)
+  i = i + 1 + line.my_parse_int(t, i)
   config.name = line[i .. line.high]

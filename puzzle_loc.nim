@@ -11,7 +11,7 @@ const
   index_mask    = 63'u32 shl index_shift
   coindex_shift = 12'u32
   coindex_mask  = 63'u32 shl coindex_shift
-  
+
 template glorified_unsigned(typ: typedesc): stmt =
   proc `+`(x: typ): uint32 = return uint32(x)
 
@@ -52,6 +52,9 @@ proc to_Coindex(loc: Loc): Coindex {.noSideEffect.} =
 proc home_Index(tile: Tile): Index {.noSideEffect.} =
   return to_Index(Loc(tile))
 
+proc home_Coindex(tile: Tile): Coindex {.noSideEffect.} =
+  return to_Coindex(Loc(tile))
+
 
 # Order
 
@@ -59,25 +62,37 @@ proc `<` (loc1, loc2: Loc): bool {.noSideEffect.} =
   return to_Index(loc1) <  to_Index(loc2)
 proc `<=`(loc1, loc2: Loc): bool {.noSideEffect.} =
   return to_Index(loc1) <= to_Index(loc2)
+proc `>` (loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Index(loc1) >  to_Index(loc2)
+proc `>=`(loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Index(loc1) >= to_Index(loc2)
 
 proc `<` (tile1, tile2: Tile): bool {.noSideEffect.} =
   return home_Index(tile1) <  home_Index(tile2)
 proc `<=`(tile1, tile2: Tile): bool {.noSideEffect.} =
   return home_Index(tile1) <= home_Index(tile2)
+proc `>` (tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Index(tile1) >  home_Index(tile2)
+proc `>=`(tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Index(tile1) >= home_Index(tile2)
 
+proc `<.` (loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Coindex(loc1) <  to_Coindex(loc2)
+proc `<=.`(loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Coindex(loc1) <= to_Coindex(loc2)
+proc `>.` (loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Coindex(loc1) >  to_Coindex(loc2)
+proc `>=.`(loc1, loc2: Loc): bool {.noSideEffect.} =
+  return to_Coindex(loc1) >= to_Coindex(loc2)
 
-# iterators
-
-iterator all_strictly_between(one_end, other_end: Index): Index =
-  var first, last: Index
-  if one_end < other_end:
-    first = one_end + 1
-    last  = other_end - 1
-  else:
-    first = other_end + 1
-    last  = one_end - 1
-  for i in int(first)..int(last):
-    yield Index(i)
+proc `<.` (tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Coindex(tile1) <  home_Coindex(tile2)
+proc `<=.`(tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Coindex(tile1) <= home_Coindex(tile2)
+proc `>.` (tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Coindex(tile1) >  home_Coindex(tile2)
+proc `>=.`(tile1, tile2: Tile): bool {.noSideEffect.} =
+  return home_Coindex(tile1) >= home_Coindex(tile2)
 
 
 # Recognising empty 'tile'

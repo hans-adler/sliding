@@ -30,6 +30,8 @@ glorified_number(Col)
 glorified_number(Index)
 glorified_number(Coindex)
 
+# Conversions between types
+
 proc to_Index(row: Row, col: Col): Index {.noSideEffect.} =
   return Index(+row * cols + +col)
 

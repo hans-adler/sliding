@@ -27,8 +27,10 @@ math.randomize()
 
 include puzzle_rci
 include puzzle_loc
+include puzzle_rciloc
 include puzzle_cfg
 include puzzle_mov
+include puzzle_ida_star
 
 ##############################################################################
 
@@ -42,7 +44,7 @@ proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int
 proc ida_star(): int =
   var upper_bound = config.bound
   while true:
-    echo " " & $upper_bound
+    #echo " " & $upper_bound
     let r = ida_star_search(0, upper_bound)
     if r == found:
       return upper_bound
@@ -105,19 +107,22 @@ proc ida_star_search(g, upper_bound: int, forbidden: set[Dir] = {}): int =
 
 var line_index = 0
 
+echo "─" * 80
 for line in "test.txt".lines:
-  echo "Line " & $line_index & ": " & line
-  if line_index == 0:
-    read(config, line)
-    #init_random(config)
-    init_md(config)
-    init_id(config)
-    echo config
-    let start_time = get_time()
-    discard ida_star()
-    let finish_time = get_time()
-    echo "Spent $# s." % [$(finish_time - start_time)]
-    break
   line_index.inc
+  if line_index > 10:
+    continue
+  echo "Line " & $line_index & ": " & line
+  echo "─" * 80
+  read(config, line)
+  #init_random(config)
+  init_md(config)
+  init_id(config)
+  echo config
+  let start_time = epoch_time()
+  discard ida_star()
+  let finish_time = epoch_time()
+  echo "Spent $# s." % [format_float(finish_time - start_time, ffDecimal, 3)]
+  echo "─" * 80
 
 #echo config
