@@ -25,12 +25,13 @@ proc h_move(config: var Config, h_sense: Sense) =
     home_col = homeCol(tile)
   # update md
   config.h_bounds.md.inc(abs(+col2 - +home_col) - abs(+col1 - +home_col))
-  # update id
-  for i in all_strictly_between(to_Coindex(index1), to_Coindex(index2)):
-    if tile >. config.tiles[+to_Index(i)]:
-      config.h_bounds.ic.inc(h_sense)
-    else:
-      config.h_bounds.ic.dec(h_sense)
+  when use_id:
+    # update id
+    for i in all_strictly_between(to_Coindex(index1), to_Coindex(index2)):
+      if tile >. config.tiles[+to_Index(i)]:
+        config.h_bounds.ic.inc(h_sense)
+      else:
+        config.h_bounds.ic.dec(h_sense)
     config.h_bounds.id = (config.h_bounds.ic + cols - 2) div (cols - 1)
 
   # update configuration
@@ -49,12 +50,13 @@ proc v_move(config: var Config, v_sense: Sense) =
     home_row = homeRow(tile)
   # update md
   config.v_bounds.md.inc(abs(+row2 - +home_row) - abs(+row1 - +home_row))
-  # update id
-  for i in all_strictly_between(index1, index2):
-    if tile > config.tiles[+i]:
-      config.v_bounds.ic.inc(v_sense)
-    else:
-      config.v_bounds.ic.dec(v_sense)
+  when use_id:
+    # update id
+    for i in all_strictly_between(index1, index2):
+      if tile > config.tiles[+i]:
+        config.v_bounds.ic.inc(v_sense)
+      else:
+        config.v_bounds.ic.dec(v_sense)
     config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
 
 

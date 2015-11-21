@@ -1,13 +1,12 @@
 {.hint[XDeclaredButNotUsed]: off.}
 
-# 1.5, 1.2, 10.6, 3.2, 1.3, 0.4, 4.6, 0.8, 0.1, 14.7
-
 type
   Outcome* = object of Exception
     nodes_visited*: int
     g*:             int
     upper_bound*:   int
     time*:          float
+    algorithm*:     string
 
 proc `$`*(outcome: ref Outcome): string =
   let time_passed = format_float(outcome.time, ffDecimal, 3)
@@ -20,6 +19,7 @@ proc ida_star*(config: Config): ref Outcome =
   var c: Config = config
   outcome.nodes_visited = 0
   outcome.upper_bound   = config.bound
+  outcome.algorithm     = "IDA*"
   let start_time = epoch_time()
   try:
     while true:

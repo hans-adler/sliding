@@ -64,19 +64,19 @@ proc init_md*(config: var Config) {.noSideEffect.} =
 proc init_id*(config: var Config) =
   config.h_bounds.ic = 0
   config.v_bounds.ic = 0
-  for i in 0 .. +last_index:
-    if i == +config.blank_index:
-      continue
-    for j in i+1 .. +last_index:
-      if j == +config.blank_index:
+  when use_id:
+    for i in 0 .. +last_index:
+      if i == +config.blank_index:
         continue
-      if config.tiles[i] > config.tiles[j]:
-        config.v_bounds.ic.inc
-      if Index(j) >. Index(i) and config.tiles[i] >. config.tiles[j]:
-        config.h_bounds.ic.inc
-      if Index(j) <. Index(i) and config.tiles[i] <. config.tiles[j]:
-        config.h_bounds.ic.inc
-
+      for j in i+1 .. +last_index:
+        if j == +config.blank_index:
+          continue
+        if config.tiles[i] > config.tiles[j]:
+          config.v_bounds.ic.inc
+        if Index(j) >. Index(i) and config.tiles[i] >. config.tiles[j]:
+          config.h_bounds.ic.inc
+        if Index(j) <. Index(i) and config.tiles[i] <. config.tiles[j]:
+          config.h_bounds.ic.inc
   config.v_bounds.id = (config.v_bounds.ic + rows - 2) div (rows - 1)
   config.h_bounds.id = (config.h_bounds.ic + cols - 2) div (cols - 1)
 
