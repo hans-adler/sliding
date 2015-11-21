@@ -61,40 +61,48 @@ proc home_Coindex(tile: Tile): Coindex {.noSideEffect.} =
 # Order
 
 proc `<` (loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Index(loc1) <  to_Index(loc2)
+  #return to_Index(loc1) <  to_Index(loc2)
+  return (+loc1 and index_mask) < (+loc2 and index_mask)
 proc `<=`(loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Index(loc1) <= to_Index(loc2)
+  #return to_Index(loc1) <= to_Index(loc2)
+  return (+loc1 and index_mask) <= (+loc2 and index_mask)
 proc `>` (loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Index(loc1) >  to_Index(loc2)
+  #return to_Index(loc1) >  to_Index(loc2)
+  return (+loc1 and index_mask) > (+loc2 and index_mask)
 proc `>=`(loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Index(loc1) >= to_Index(loc2)
+  #return to_Index(loc1) >= to_Index(loc2)
+  return (+loc1 and index_mask) >= (+loc2 and index_mask)
 
 proc `<` (tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Index(tile1) <  home_Index(tile2)
+  return Loc(tile1) <  Loc(tile2)
 proc `<=`(tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Index(tile1) <= home_Index(tile2)
+  return Loc(tile1) <= Loc(tile2)
 proc `>` (tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Index(tile1) >  home_Index(tile2)
+  return Loc(tile1) >  Loc(tile2)
 proc `>=`(tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Index(tile1) >= home_Index(tile2)
+  return Loc(tile1) >= Loc(tile2)
 
 proc `<.` (loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Coindex(loc1) <  to_Coindex(loc2)
+  #return to_Coindex(loc1) <  to_Coindex(loc2)
+  return (+loc1 and coindex_mask) < (+loc2 and coindex_mask)
 proc `<=.`(loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Coindex(loc1) <= to_Coindex(loc2)
+  #return to_Coindex(loc1) <= to_Coindex(loc2)
+  return (+loc1 and coindex_mask) <= (+loc2 and coindex_mask)
 proc `>.` (loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Coindex(loc1) >  to_Coindex(loc2)
+  #return to_Coindex(loc1) >  to_Coindex(loc2)
+  return (+loc1 and coindex_mask) > (+loc2 and coindex_mask)
 proc `>=.`(loc1, loc2: Loc): bool {.noSideEffect.} =
-  return to_Coindex(loc1) >= to_Coindex(loc2)
+  #return to_Coindex(loc1) >= to_Coindex(loc2)
+  return (+loc1 and coindex_mask) >= (+loc2 and coindex_mask)
 
 proc `<.` (tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Coindex(tile1) <  home_Coindex(tile2)
+  return Loc(tile1) <. Loc(tile2)
 proc `<=.`(tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Coindex(tile1) <= home_Coindex(tile2)
+  return Loc(tile1) <=. Loc(tile2)
 proc `>.` (tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Coindex(tile1) >  home_Coindex(tile2)
+  return Loc(tile1) >.  Loc(tile2)
 proc `>=.`(tile1, tile2: Tile): bool {.noSideEffect.} =
-  return home_Coindex(tile1) >= home_Coindex(tile2)
+  return Loc(tile1) >=. Loc(tile2)
 
 
 # Recognising empty 'tile'

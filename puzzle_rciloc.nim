@@ -11,22 +11,22 @@ proc to_Index(coindex: Coindex): Index =
 # More on order
 
 proc `<.` (index1, index2: Index): bool =
-  return to_Coindex(index1) < to_Coindex(index2)
+  return loc_list[+index1] <. loc_list[+index2]
 proc `<=.` (index1, index2: Index): bool =
-  return to_Coindex(index1) <= to_Coindex(index2)
+  return loc_list[+index1] <=. loc_list[+index2]
 proc `>.` (index1, index2: Index): bool =
-  return to_Coindex(index1) > to_Coindex(index2)
+  return loc_list[+index1] >. loc_list[+index2]
 proc `>=.` (index1, index2: Index): bool =
-  return to_Coindex(index1) >= to_Coindex(index2)
+  return loc_list[+index1] >=. loc_list[+index2]
 
 proc `<.` (coindex1, coindex2: Coindex): bool =
-  return to_Index(coindex1) < to_Index(coindex2)
+  return loc_list[+coindex1] < loc_list[+coindex2]
 proc `<=.` (coindex1, coindex2: Coindex): bool =
-  return to_Index(coindex1) <= to_Index(coindex2)
+  return loc_list[+coindex1] <= loc_list[+coindex2]
 proc `>.` (coindex1, coindex2: Coindex): bool =
-  return to_Index(coindex1) > to_Index(coindex2)
+  return loc_list[+coindex1] > loc_list[+coindex2]
 proc `>=.` (coindex1, coindex2: Coindex): bool =
-  return to_Index(coindex1) >= to_Index(coindex2)
+  return loc_list[+coindex1] >= loc_list[+coindex2]
 
 # Iterators
 

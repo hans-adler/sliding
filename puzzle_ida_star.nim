@@ -48,7 +48,6 @@ proc ida_star_search(config: var Config, outcome: ref Outcome, forbidden: Dir) =
   if f > outcome.upper_bound:
     return
   elif is_solved(config):
-    #echo "Found it after $# steps. Minimum solution is of length $#." % [$outcome.nodes_visited, $outcome.g]
     raise outcome
   outcome.g.inc
   if not (left == forbidden) and config.blank_col > Col(0):
