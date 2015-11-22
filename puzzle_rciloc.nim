@@ -1,5 +1,9 @@
 {.hint[XDeclaredButNotUsed]: off.}
 
+type
+  Sense = range[-1..1]
+
+
 # More conversions
 
 proc to_Coindex(index: Index): Coindex =
@@ -52,4 +56,22 @@ iterator all_strictly_between(one_end, other_end: Coindex): Coindex =
   for i in int(first)..int(last):
     yield Coindex(i)
 
+iterator all_strictly_between(one_end, other_end: Index, increment: Sense): Index =
+  var result = +one_end - increment
+  while result != +other_end:
+    yield Index(result)
+    result.dec increment
 
+iterator all_strictly_between(one_end, other_end: Coindex, increment: Sense): Coindex =
+  var result = +one_end - increment
+  while result != +other_end:
+    yield Coindex(result)
+    result.dec increment
+
+iterator all_strictly_between1(one_end, other_end: Coindex, increment: Sense): Coindex =
+  var result = +one_end - increment
+  yield Coindex(result)
+  result.dec increment
+  yield Coindex(result)
+  result.dec increment
+  yield Coindex(result)
