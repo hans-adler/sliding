@@ -20,7 +20,6 @@ import math
 import strutils
 import parseutils
 import times
-math.randomize()
 
 {.hint[XDeclaredButNotUsed]: off.}
 

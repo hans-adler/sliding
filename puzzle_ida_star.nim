@@ -12,7 +12,7 @@ proc `$`*(outcome: ref Outcome): string =
   let time_passed = format_float(outcome.time, ffDecimal, 3)
   return "Length $# minimal solution found in $# s after visiting $# nodes." % [$outcome.g, time_passed, $outcome.nodes_visited]
 
-proc ida_star_search(config: var Config, outcome: ref Outcome, forbidden: Dir)
+proc ida_star_search(config: var Config, outcome: ref Outcome, forbidden: Dir = none)
 
 proc ida_star*(config: Config): ref Outcome =
   let outcome = newException(Outcome, "IDA* finished")
@@ -23,10 +23,8 @@ proc ida_star*(config: Config): ref Outcome =
   let start_time = epoch_time()
   try:
     while true:
-      #echo "[", outcome.upper_bound, " (", outcome.nodes_visited, ")]"
-      #echo c
       outcome.g = 0
-      ida_star_search(c, outcome, none)
+      ida_star_search(c, outcome)
       outcome.upper_bound.inc 2
   except:
     let finish_time = epoch_time()
@@ -40,7 +38,7 @@ proc ida_star*(config: Config): ref Outcome =
 # returns found once the result has been found
 # returns high(int) if there is no solution below the threshold
 # otherwise returns the lowest next upper bound that makes sense in this branch
-proc ida_star_search(config: var Config, outcome: ref Outcome, forbidden: Dir) =
+proc ida_star_search(config: var Config, outcome: ref Outcome, forbidden: Dir = none) =
   #echo($outcome.g)
   #echo config
   outcome.nodes_visited.inc

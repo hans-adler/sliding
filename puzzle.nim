@@ -8,13 +8,16 @@ import strutils
 import times
 import math
 
+math.randomize(1)
+
+
 #erase_screen()
 #set_cursor_pos(0, 0)
 
 
 ##############################################################################
 
-proc nthroot(a: float, n: int): float =
+proc nth_root(a: float, n: int): float =
   var n = float(n)
   result = a
   var x = a / n
@@ -53,7 +56,7 @@ proc pad(s: string, len: int): string =
     return s & (" " * (len - s.len))
 
 proc make_line(config: Config, outcome: ref Outcome): string =
-  let branching_factor = format_float(nthroot(float(outcome.nodes_visited), outcome.g), ffDecimal, 2)
+  let branching_factor = format_float(nth_root(float(outcome.nodes_visited), outcome.g), ffDecimal, 2)
   let time_per_node = pad(format_float(outcome.time * float(1000000000) / float(outcome.nodes_visited), ffDecimal, 1), -8)
   let nodes = pad($:outcome.nodes_visited, -15)
   return "║$#│ $# ns │ $# = $#$# ║" %
@@ -78,8 +81,10 @@ for line in "test.txt".lines:
     continue
   #echo "Line " & $line_index & ": " & line
   #echo "─" * 79
-  read(config, line)
-  #init_random(config)
+  when true:
+    read(config, line)
+  else:
+    init_random(config)
   init_md(config)
   init_id(config)
   echo make_line(config, ida_star(config))

@@ -13,10 +13,10 @@ proc can_v_move(config: var Config, v_sense: Sense): bool {.noSideEffect.} =
 proc can_move(config: var Config, h_sense, v_sense: Sense): bool {.noSideEffect.} =
   return can_h_move(config, h_sense) and can_v_move(config, v_sense)
 
-# Only works correctly for a != 0.
+# Warning: For a == low(int), this raises an overflow or incorrectly returns 1.
 const int_length_minus_1 = 8 * sizeof(int) - 1
 proc fast_sgn(a: int): int {.noSideEffect.} =
-  return 1 - 2 * (a shr int_length_minus_1)
+  return (-a shr int_length_minus_1) - (a shr int_length_minus_1)
 
 proc h_move(config: var Config, h_sense: Sense) =
   let
