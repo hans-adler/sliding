@@ -20,14 +20,14 @@ proc ida_star*(config: Config): ref Outcome =
   outcome.nodes_visited = 0
   outcome.upper_bound   = config.bound
   outcome.algorithm     = "IDA*"
-  let start_time = epoch_time()
+  let start_time = cpu_time()
   try:
     while true:
       outcome.g = 0
       ida_star_search(c, outcome)
       outcome.upper_bound.inc 2
   except:
-    let finish_time = epoch_time()
+    let finish_time = cpu_time()
     let outcome = (ref Outcome) get_current_exception()
     outcome.time = finish_time - start_time
     return outcome

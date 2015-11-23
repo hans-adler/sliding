@@ -65,8 +65,9 @@ proc v_move(config: var Config, v_sense: Sense) =
     # It is weird, but even in very similar contexts, sometimes the non-branching version
     # is significantly faster and sometimes it's significantly slower.
     # I also tried loop unrolling here for 4 x 4, but it makes things slower!
+    # The bool in the when statement should be true on my 32-bit laptop, false on my S20.
     for i in all_strictly_between(index1, index2, v_sense):
-      when true:
+      when false:
         config.v_bounds.ic.inc v_sense * fast_sgn(int(+tile and index_mask) - int(+config.tiles[+i] and index_mask))
       else:
         if tile > config.tiles[+i]:

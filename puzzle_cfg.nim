@@ -91,9 +91,9 @@ proc init_sorted*(config: var Config) =
 proc random_inclusive(a, b: int): int =
   return a + math.random(b+1-a)
 
-proc init_random*(config: var Config, blank_in_home_position = false) =
+proc init_random*(config: var Config, name = "random", blank_in_home_position = false) =
   init_sorted(config)
-  config.name = "random"
+  config.name = name
   for i in countdown(+last_index, 1):
     let j = random_inclusive(1, i)
     if i != j:
